@@ -30,7 +30,7 @@ Respond ONLY with JSON in this exact shape:
 Rules: score is 0-100. cost_usd and sell_usd are realistic numbers. search_terms are keywords to find the product on AliExpress/CJ and check on Google Trends/TikTok. Be honest about risks. No markdown.`;
 
   // Pehla model busy ho to doosra try hota hai
-  const models = ["gemini-3.8-flash", "gemini-3.7-flash"];
+  const models = ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.6-flash"];
   try {
     let lastError = "Gemini error";
     for (const model of models) {
