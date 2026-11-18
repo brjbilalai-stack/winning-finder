@@ -9,8 +9,14 @@ exports.handler = async (event) => {
     return { statusCode: 500, body: JSON.stringify({ error: "GEMINI_API_KEY set nahi hai (Netlify > Site settings > Environment variables)" }) };
   }
 
-  let command = "";
-  try { command = (JSON.parse(event.body || "{}").command || "").slice(0, 500); } catch (e) {}
+  let command = "", angle = "";
+  try {
+    const b = JSON.parse(event.body || "{}");
+    command = (b.command || "").slice(0, 500);
+    angle = b.angle === "B"
+      ? "Focus on problem-solving, evergreen products with strong repeat or bundle potential."
+      : "Focus on viral, visually demonstrable, impulse-buy products.";
+  } catch (e) {}
   if (!command) {
     return { statusCode: 400, body: JSON.stringify({ error: "Command khali hai" }) };
   }
@@ -18,7 +24,7 @@ exports.handler = async (event) => {
   const prompt = `You are an expert Shopify dropshipping product researcher.
 User command: "${command}"
 
-Suggest 6 realistic product ideas that fit the command. For each product, judge using: trend momentum, demand, competition level, profit margin, shipping/fragility, and "wow factor"/problem solved.
+Suggest 3 realistic product ideas that fit the command. ${angle} For each product, judge using: trend momentum, demand, competition level, profit margin, shipping/fragility, and "wow factor"/problem solved.
 Respond ONLY with JSON in this exact shape:
 {"products":[{"name":"","why":"","cost_usd":0,"sell_usd":0,"competition":"low|medium|high","score":0,"ad_angle":"","search_terms":["",""],"risk":""}]}
 Rules: score is 0-100. cost_usd and sell_usd are realistic numbers. search_terms are keywords to find the product on AliExpress/CJ and check on Google Trends/TikTok. Be honest about risks. No markdown.`;
@@ -35,7 +41,7 @@ Rules: score is 0-100. cost_usd and sell_usd are realistic numbers. search_terms
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { responseMimeType: "application/json", temperature: 0.8 }
+            generationConfig: { responseMimeType: "application/json", temperature: 0.8, thinkingConfig: { thinkingLevel: "low" } }
           })
         }
       );
